@@ -1,9 +1,10 @@
 use consts::{constant_simple, Constant};
 use rustc::hir::*;
 use rustc::lint::*;
-use rustc_const_math::ConstInt;
 use syntax::codemap::Span;
 use utils::{in_macro, snippet, span_lint};
+use rustc::ty::{self, layout};
+use syntax::attr;
 
 /// **What it does:** Checks for identity operations, e.g. `x + 0`.
 ///
@@ -58,29 +59,18 @@ impl<'a, 'tcx> LateLintPass<'a, 'tcx> for IdentityOp {
     }
 }
 
-fn all_ones(v: &ConstInt) -> bool {
-    match *v {
-        ConstInt::I8(i) => i == !0,
-        ConstInt::I16(i) => i == !0,
-        ConstInt::I32(i) => i == !0,
-        ConstInt::I64(i) => i == !0,
-        ConstInt::I128(i) => i == !0,
-        ConstInt::U8(i) => i == !0,
-        ConstInt::U16(i) => i == !0,
-        ConstInt::U32(i) => i == !0,
-        ConstInt::U64(i) => i == !0,
-        ConstInt::U128(i) => i == !0,
-        _ => false,
-    }
-}
-
 #[allow(cast_possible_wrap)]
 fn check(cx: &LateContext, e: &Expr, m: i8, span: Span, arg: Span) {
     if let Some(Constant::Int(v)) = constant_simple(cx, e) {
+        let check = match cx.tables.expr_ty(e).sty {
+            ty::TyInt(ity) => ((-1i128) >> (128 - layout::Integer::from_attr(cx.tcx, attr::IntType::SignedInt(ity)).size().bits())) as u128,
+            ty::TyUint(uty) => !0 >> (128 - layout::Integer::from_attr(cx.tcx, attr::IntType::UnsignedInt(uty)).size().bits()),
+            _ => !0,
+        };
         if match m {
-            0 => v.to_u128_unchecked() == 0,
-            -1 => all_ones(&v),
-            1 => v.to_u128_unchecked() == 1,
+            0 => v == 0,
+            -1 => v == check,
+            1 => v == 1,
             _ => unreachable!(),
         } {
             span_lint(

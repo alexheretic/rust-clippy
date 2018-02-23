@@ -24,41 +24,11 @@ error: regex syntax error: invalid character class range
 19 |     let some_unicode = Regex::new("[é-è]");
    |                                   ^^^^^^^
 
-error: regex syntax error on position 0: unclosed parenthesis
-  --> $DIR/regex.rs:21:33
-   |
-21 |     let some_regex = Regex::new(OPENING_PAREN);
-   |                                 ^^^^^^^^^^^^^
-
 error: regex syntax error: empty alternate
   --> $DIR/regex.rs:23:53
    |
 23 |     let binary_pipe_in_wrong_position = BRegex::new("|");
    |                                                     ^^^
-
-error: regex syntax error on position 0: unclosed parenthesis
-  --> $DIR/regex.rs:24:41
-   |
-24 |     let some_binary_regex = BRegex::new(OPENING_PAREN);
-   |                                         ^^^^^^^^^^^^^
-
-error: regex syntax error on position 0: unclosed parenthesis
-  --> $DIR/regex.rs:25:56
-   |
-25 |     let some_binary_regex_builder = BRegexBuilder::new(OPENING_PAREN);
-   |                                                        ^^^^^^^^^^^^^
-
-error: regex syntax error on position 0: unclosed parenthesis
-  --> $DIR/regex.rs:40:9
-   |
-40 |         OPENING_PAREN,
-   |         ^^^^^^^^^^^^^
-
-error: regex syntax error on position 0: unclosed parenthesis
-  --> $DIR/regex.rs:44:9
-   |
-44 |         OPENING_PAREN,
-   |         ^^^^^^^^^^^^^
 
 error: regex syntax error: unrecognized escape sequence
   --> $DIR/regex.rs:48:45
@@ -114,14 +84,6 @@ error: trivial regex
    = help: consider using consider using `str::contains`
 
 error: trivial regex
-  --> $DIR/regex.rs:63:39
-   |
-63 |     let trivial_contains = Regex::new(NOT_A_REAL_REGEX);
-   |                                       ^^^^^^^^^^^^^^^^
-   |
-   = help: consider using consider using `str::contains`
-
-error: trivial regex
   --> $DIR/regex.rs:65:40
    |
 65 |     let trivial_backslash = Regex::new("a/.b");
@@ -161,5 +123,5 @@ error: trivial regex
    |
    = help: consider using consider using `str::is_empty`
 
-error: aborting due to 23 previous errors
+error: aborting due to 17 previous errors
 
